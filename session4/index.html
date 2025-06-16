@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internal, Inline, and External Styling</title>
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <!-- Internal Styling -->
+    <!-- Element Selector -->
+    <!-- ID Selector -->
+    <!-- Class Selector -->
+    <style>
+        body {
+            background-color: rgb(112, 112, 112);
+        }
+        #header1 {
+            color: blue;
+            text-align: center;
+        }
+        h2 {
+            color: red;
+            text-align: center;
+        }
+        
+        .header {
+            color: rgb(92, 0, 128);
+            text-align: center;
+        }
+
+        #hello {
+            color: brown !important;
+            text-align: center;
+        }
+
+        .box {
+            background-color: rgb(255, 255, 255);
+            border: 2px solid black;
+            padding: 20px;
+            margin: 20px auto;
+            width: 50%;
+            text-align: center;
+        }
+    </style>
+
+    <h1 id="header1" class="header">Internal, Inline, and External Styling</h1>
+    <h1 id="header2" class="header">Internal, Inline, and External Styling</h1>
+    <h2 id="header2" class="header">Internal Styling Example</h2>
+
+    <!-- Inline vs Internal Styling -->
+    <h3 id="hello" style="color: aquamarine;">Inline vs Internal</h3>
+
+    <div class="box">
+        <h2>Inline Styling Example</h2>
+        <p style="color: green; font-size: 20px;">This is an example of inline styling.</p>
+    </div>    
+</body>
+</html>
