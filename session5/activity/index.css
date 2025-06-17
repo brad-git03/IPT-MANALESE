@@ -1,0 +1,14 @@
+/* UNIVERSAL SELECTOR */
+
+/* 
+SYNTAX:
+
+selector{
+    property: value;
+}
+
+*/
+
+* {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
