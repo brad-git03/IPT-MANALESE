@@ -1,0 +1,98 @@
+/*
+UNIVERSAL SELECTOR
+SYNTAX:
+
+selector {
+  property: value;
+}
+
+
+*/
+
+* { /* Meaning all elements */
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 20px;
+}
+
+body {
+    background-color: #23cbe9;
+}
+nav {
+    background-color: #f0f0f0;
+    padding: 10px;
+}
+
+div {
+    float: right;
+}
+
+/* Element or Type Selector */
+h1 {
+    color: #ff0000;
+    text-align: center;
+    font-size: 2rem; /* 2rem is equivalent to 32px */
+}
+
+/* LANDING SECTION */
+section {
+    height: 100vh; /* 100vh means 100% of the viewport height */
+    text-align: center;
+}
+
+h2{
+    font-size: 1.5rem; /* 1.5rem is equivalent to 24px */
+}
+
+/* ID Selector */
+#ua-motto {
+    letter-spacing: 8px;
+}
+
+h3 {
+    letter-spacing: 25px;
+    color: #000;
+}
+
+/* CLASS SELECTOR */
+
+.modules {
+    letter-spacing: 5px;
+
+}
+
+/* Adjacent Sibling Selector */
+/* Selector + Selector */
+
+h3 + img {
+    height: 300px;
+    width: 300px;
+    border-radius: 80px;
+}
+
+ol {
+    list-style-type:none; /* Removes default list styling */
+    padding: 0; /* Removes default padding */
+}
+
+.offering-item {
+    text-transform: uppercase;
+}
+
+/* Descendant Selector */
+/* Selector Selector */
+
+#bootcamp-learning-list li {
+    color: #ff9797;
+    font-weight: bold;
+}
+
+/* General Sibling Selector */
+/* Selector ~ Selector */
+
+h2 ~ a {
+    text-decoration: none; /* Removes underline from links */
+}
+
+html {
+    scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+}
