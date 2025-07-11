@@ -1,51 +1,151 @@
-import React from 'react'
-import { Form, Button, Container } from 'react-bootstrap'
-
+import { useEffect, useState } from "react"
+import { Container, Form, Button } from "react-bootstrap"
+import Swal from "sweetalert2";
 
 export default function Register() {
+
+    let [fname, setFname] = useState("");
+    let [mname, setMname] = useState("");
+    let [lname, setLname] = useState("");
+    let [email, setEmail] = useState("");
+    let [pass, setPass] = useState("");
+    let [confirmPass, setConfirmPass] = useState("");
+
+    let [passMessage, setPassMessage] = useState("");
+
+    useEffect(() => {
+        if (pass.length === 0 && confirmPass.length === 0) {
+            setPassMessage("");
+        } else {
+
+            if (pass.length >= 1 && pass.length <= 7) {
+                setPassMessage({
+                    message: "Password must be 8 characters long.",
+                    css: "fw-bold text-danger"
+                });
+            } else {
+
+                if (pass !== confirmPass) {
+                    setPassMessage({
+                        message: "Password do not match",
+                        css: "fw-bold text-warning"
+                    });
+                } else {
+                    setPassMessage({
+                        message: "Password matched.",
+                        css: "fw-bold text-success"
+                    });
+                }
+
+            }
+        }
+    }, [pass, confirmPass])
+
+
+
+    function register(e) {
+        e.preventDefault();
+
+        fetch("http://localhost:3000/users/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fname, mname, lname, email, pass })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === 1) {
+                    Swal.fire({
+                        title: "Registered!",
+                        text: data.details,
+                        icon: "success",
+                        confirmButtonText: "OK"
+                    }).then(() => {
+                        setFname("");
+                        setMname("");
+                        setLname("");
+                        setEmail("");
+                        setPass("");
+                        setConfirmPass("");
+                        setPassMessage("");
+                        window.location.href = "/login";
+                    })
+                } else if (data.code === 2) {
+                    Swal.fire({
+                        title: "OOPS!",
+                        text: data.details,
+                        icon: "warning",
+                        confirmButtonText: "OK"
+                    })
+                    setEmail("");
+                    setPass("");
+                    setConfirmPass("");
+                } else {
+                    Swal.fire({
+                        title: "Error!",
+                        text: data.details,
+                        icon: "error",
+                        confirmButtonText: "OK"
+                    })
+                }
+            })
+    }
+
     return (
-        <Container fluid className='d-flex justify-content-center p-5 shadow rounded w-50 mt-5'>
-            <Container className='w-75 mt-3 align-items-center d-flex justify-content-center'>
-                <img src="https://web.ua.edu.ph/wp-content/uploads/2024/09/ua-logo.png" alt="Register Icon" className='img-fluid' />
-            </Container>        
-            <Container className='w-75'>
-                <h2 className='text-center mb-4 fw-bold display-4'>Register</h2>
-                <p className='text-center'>Please fill in the form below to create an account</p>
-                <Form>
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label className="fw-bold">First Name</Form.Label>
-                        <Form.Control type="first_name" placeholder="Enter First Name" />
+        <Container className="vh-100 d-flex align-items-center justify-content-center">
+
+            <Container className="p-1 p-lg-5 d-flex align-items-center justify-content-center flex-column border my-5 rounded-4">
+
+                <h1 className="display-3 fw-bold text-primary">Sign Up</h1>
+
+                <Form className="my-3 p-3 col-12 col-lg-4" onSubmit={register}>
+
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Control
+                            type="text"
+                            placeholder="First Name" required
+                            onChange={e => setFname(e.target.value)}
+                            value={fname}
+                        />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label className="fw-bold">Last Name</Form.Label>
-                        <Form.Control type="last_name" placeholder="Enter Last Name" />
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Control type="text" placeholder="Middle Name" required
+                            onChange={e => setMname(e.target.value)}
+                            value={mname} />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label className="fw-bold">Email</Form.Label>
-                        <Form.Control type="email" placeholder="Enter email" />
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Control type="text" placeholder="Last Name" required
+                            onChange={e => setLname(e.target.value)}
+                            value={lname} />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label className="fw-bold">Password</Form.Label>
-                        <Form.Control type="password" placeholder="Password" />
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Control type="email" placeholder="Email" required
+                            onChange={e => setEmail(e.target.value)}
+                            value={email} />
                     </Form.Group>
-                    
-                    <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label className="fw-bold">Confirm Password</Form.Label>
-                        <Form.Control type="password" placeholder="Password" />
-                    </Form.Group>   
 
-                    <Form.Group className="mb-3" controlId="formBasicCheckbox">
-                        <Form.Check type="checkbox" label="I Agree of the terms" />
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Control type="password" placeholder="Password" required
+                            onChange={e => setPass(e.target.value)}
+                            value={pass} />
                     </Form.Group>
-                    <Button variant="outline-primary" type="submit">
-                        Create Account
-                    </Button>
+
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Control type="password" placeholder="Confirm Password" required
+                            onChange={e => setConfirmPass(e.target.value)}
+                            value={confirmPass} />
+                    </Form.Group>
+
+                    <p className={passMessage.css}>{passMessage.message}</p>
+
+                    <Button className="w-100 p-2" type="submit">Sign Up</Button>
+
+
                 </Form>
             </Container>
+
         </Container>
     )
-
 }

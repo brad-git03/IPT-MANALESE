@@ -1,31 +1,30 @@
-import React from 'react'
-import { Button, Container, Form } from 'react-bootstrap'
+import { Container, Form, Button } from "react-bootstrap"
 
 export default function Login() {
-    return (
-        <Container fluid className='p-5 shadow rounded w-50 mt-5'>
-            <h1 className='text-center mb-4 fw-bold display-4'>Login</h1>
-            <p className='text-center'>Please enter your credentials to login</p>
-            <Form>
-                <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" placeholder="Enter email" />
-                    <Form.Text className="text-muted">
-                        We'll never share your email with anyone else.
-                    </Form.Text>
-                </Form.Group>
+  return (
+    <Container className="vh-100 d-flex align-items-center justify-content-center">
 
-                <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Password" />
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="formBasicCheckbox">
-                    <Form.Check type="checkbox" label="Check me out" />
-                </Form.Group>
-                <Button variant="primary" type="submit">
-                    Submit
-                </Button>
-            </Form>
+        <Container className="p-1 p-lg-5 d-flex align-items-center justify-content-center flex-column border my-5 rounded-4">
+
+        <h1 className="display-3 fw-bold text-primary">Sign In</h1>
+
+            <Form className="my-3 p-3 col-12 col-lg-4">
+
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Control type="email" placeholder="Email" />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Control type="password" placeholder="Password" />
+            </Form.Group>
+
+
+            <Button className="w-100 p-2">Sign In</Button>
+
+
+        </Form>
         </Container>
-    )
+        
+    </Container>
+  )
 }
