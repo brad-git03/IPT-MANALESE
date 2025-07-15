@@ -7,18 +7,21 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Tasks from './pages/Tasks';
+import { Container } from 'react-bootstrap';
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <AppNavbar />
+        <Container className='d-flex flex-column align-items-center jusify-content-center' fluid>
         <Routes>
           <Route path='/register' element={<Register />} />
           <Route path='/login' element={<Login />} />
           <Route path='/tasks' element={<Tasks />} />
           <Route path='*' element={<Error />} />
         </Routes>
+        </Container>
       </BrowserRouter>
     </AuthProvider>
   );
