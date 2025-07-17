@@ -29,14 +29,14 @@ export default function AppNavbar(){
 
             {
                 !user ? 
-                <Navbar.Brand href="#home" className='text-primary fw-bold'>UTask</Navbar.Brand>
+                <Navbar.Brand href="/" className='text-primary fw-bold'>UTask</Navbar.Brand>
                 :
-                <Navbar.Brand href="#home" className='text-primary fw-bold'>Hello, {user.fname.toUpperCase()} {user.lname.toUpperCase()}!</Navbar.Brand>
+                <Navbar.Brand href="/" className='text-primary fw-bold'>Hello, {user.fname.toUpperCase()} {user.lname.toUpperCase()}!</Navbar.Brand>
             }
 
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto">
+            <Nav className="ms-auto gap-3">
 
                 {
                     !user ?

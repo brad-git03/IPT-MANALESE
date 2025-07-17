@@ -1,38 +1,70 @@
+import { use } from 'react';
 import { useAuth } from '../AuthContext';
 import { useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Button, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
-export default function ProfilePage() {
 
+export default function ProfilePage() {
     const { user, setUser } = useAuth();
+    const [showEdit, setShowEdit] = useState(false);
+
     const navigate = useNavigate();
 
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [passwords, setPasswords] = useState({
+        current: "",
+        newPass: "",
+        confirm: ""
+    });
+
+    const [passMessage, setPassMessage] = useState({
+        message: "",
+        css: ""
+    });
+
+    const [editProfile, setEditProfile] = useState({
+        fname: "",
+        mname: "",
+        lname: "",
+        email: ""
+    });
+
     useEffect(() => {
+        document.title = `${user.fname.toUpperCase()} ${user.lname.toUpperCase()} - Profile`
         if (!user) {
             navigate("/login");
         } else {
-            document.title = `${user.fname.toUpperCase()} ${user.lname.toUpperCase()} - Profile`;
+            setEditProfile({
+                fname: user.fname,
+                mname: user.mname,
+                lname: user.lname,
+                email: user.email
+            });
         }
     }, [user, navigate]);
 
-    const [showEdit, setShowEdit] = useState(false);
-    const [showPasswordModal, setShowPasswordModal] = useState(false);
 
-    const [editProfile, setEditProfile] = useState({
-        fname: user.fname,
-        mname: user.mname,
-        lname: user.lname,
-        email: user.email
-    });
+    useEffect(() => {
+        const { newPass, confirm } = passwords;
 
-    const [passwordData, setPasswordData] = useState({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: ""
-    });
+        if (newPass.length === 0 && confirm.length === 0) {
+            setPassMessage({ message: "", css: "" });
+        } else if (newPass.length > 0 && newPass.length < 8) {
+            setPassMessage({ message: "Password must be at least 8 characters.", css: "fw-bold text-danger" });
+        } else if (newPass !== confirm) {
+            setPassMessage({ message: "Passwords do not match.", css: "fw-bold text-warning" });
+        } else {
+            setPassMessage({ message: "Passwords match.", css: "fw-bold text-success" });
+        }
+    }, [passwords.newPass, passwords.confirm]);
 
+    if (!user) return null; // Ensure user is defined before rendering
+
+
+
+    // Edit Profile Function
     const handleUpdateProfile = () => {
         fetch(`http://localhost:4000/users/update/${user.user_id}`, {
             method: 'PUT',
@@ -42,7 +74,11 @@ export default function ProfilePage() {
             .then(res => res.json())
             .then(data => {
                 if (data.code === 1) {
-                    const updatedUser = { ...user, ...editProfile };
+
+                    const updatedUser = {
+                        ...user,
+                        ...editProfile
+                    };
                     setUser(updatedUser);
                     localStorage.setItem("loginData", JSON.stringify(updatedUser));
 
@@ -51,11 +87,11 @@ export default function ProfilePage() {
                         title: 'Updated!',
                         text: data.details
                     });
-                    setShowEdit(false);
                     setTimeout(() => {
                         window.location.reload();
-                    }, 2500); // Reload after 1 second
-                    setPasswordData("");
+                    }, 1000);
+
+                    setShowEdit(false);
 
                 } else {
                     Swal.fire({
@@ -67,72 +103,59 @@ export default function ProfilePage() {
             });
     };
 
-    let [passMessage, setPassMessage] = useState("");
-    const { currentPassword, newPassword, confirmPassword } = passwordData;
-    useEffect(() => {
-        if (currentPassword.length === 0 && newPassword.length === 0) {
-            setPassMessage("");
-        } else {
+    // Change Password Function
 
-            if (newPassword.length >= 1 && newPassword.length <= 7) {
-                setPassMessage({
-                    message: "Password must be 8 characters long.",
-                    css: "fw-bold text-danger"
-                });
-            } else {
-
-                if (newPassword !== confirmPassword) {
-                    setPassMessage({
-                        message: "Password do not match",
-                        css: "fw-bold text-warning"
-                    });
-                } else {
-                    setPassMessage({
-                        message: "Password matched.",
-                        css: "fw-bold text-success"
-                    });
-                }
-
-            }
-        }
-    }, [newPassword, confirmPassword])
 
     const handleChangePassword = () => {
-        const { currentPassword, newPassword, confirmPassword } = passwordData;
+        const { current, newPass, confirm } = passwords;
 
-        if (newPassword !== confirmPassword) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Mismatch',
-                text: 'New password and confirm password do not match.'
-            });
-            return;
+        // Basic password checks
+        if (newPass.length < 8) {
+            return Swal.fire("Invalid", "New password must be at least 8 characters long.", "warning");
         }
 
-        fetch(`http://localhost:4000/users/change-password/${user.user_id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ currentPassword, newPassword })
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.code === 1) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: data.details
+        if (newPass !== confirm) {
+            return Swal.fire("Mismatch", "New passwords do not match.", "warning");
+        }
+
+        // Confirm action
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to update your password?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ffc107',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, update it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`http://localhost:4000/users/change-password/${user.user_id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        currentPassword: current,
+                        newPassword: newPass
+                    })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.code === 1) {
+                            Swal.fire("Updated!", data.details, "success");
+                            setShowPasswordModal(false);
+                            setPasswords({ current: "", newPass: "", confirm: "" });
+                        } else {
+                            Swal.fire("Error", data.details, "error");
+                        }
                     });
-                    setShowPasswordModal(false);
-                    setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: data.details
-                    });
-                }
-            });
+            } else {
+                // Clear fields if user cancels
+                setPasswords({ current: "", newPass: "", confirm: "" });
+            }
+        });
     };
+
+
+
 
     return (
         <Container fluid className="min-vh-100 bg-light d-flex align-items-center justify-content-center py-5">
@@ -206,19 +229,16 @@ export default function ProfilePage() {
                                 </Button>
                             </Col>
                             <Col xs="auto">
-                                <Button
-                                    variant="warning"
-                                    className="px-4 py-2"
-                                    onClick={() => setShowPasswordModal(true)}
-                                >
+                                <Button variant="warning" onClick={() => setShowPasswordModal(true)}>
                                     Change Password
                                 </Button>
+
                             </Col>
                         </Row>
                     </Col>
                 </Row>
 
-                {/* Edit Profile Modal */}
+                {/* Edit Modal */}
                 <Modal show={showEdit} onHide={() => setShowEdit(false)} centered>
                     <Modal.Header closeButton className="bg-dark text-white">
                         <Modal.Title>Edit Profile</Modal.Title>
@@ -274,52 +294,66 @@ export default function ProfilePage() {
                         </Modal.Footer>
                     </Form>
                 </Modal>
-
-                {/* Change Password Modal */}
-                <Modal show={showPasswordModal} onHide={() => setShowPasswordModal(false)} centered>
+                <Modal
+                    show={showPasswordModal}
+                    onHide={() => {
+                        setShowPasswordModal(false);
+                        setPasswords({ current: "", newPass: "", confirm: "" });
+                    }}
+                    centered
+                >
                     <Modal.Header closeButton className="bg-dark text-white">
                         <Modal.Title>Change Password</Modal.Title>
                     </Modal.Header>
-                    <Form onSubmit={(e) => {
-                        e.preventDefault();
-                        handleChangePassword();
-                    }}>
-                        <Modal.Body>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Current Password</Form.Label>
-                                <Form.Control
-                                    type="password"
-                                    value={passwordData.currentPassword}
-                                    onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                                    required
-                                />
-                            </Form.Group>
-                            <Form.Group className="mb-3">
-                                <Form.Label>New Password</Form.Label>
-                                <Form.Control
-                                    type="password"
-                                    value={passwordData.newPassword}
-                                    onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                                    required
-                                />
-                            </Form.Group>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Confirm New Password</Form.Label>
-                                <Form.Control
-                                    type="password"
-                                    value={passwordData.confirmPassword}
-                                    onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                                    required
-                                />
-                            </Form.Group>
-                            <p className={passMessage.css}>{passMessage.message}</p>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="secondary" onClick={() => setShowPasswordModal(false)}>Cancel</Button>
-                            <Button variant="warning" type="submit">Update Password</Button>
-                        </Modal.Footer>
-                    </Form>
+                    <Modal.Body>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Current Password</Form.Label>
+                            <Form.Control
+                                type="password"
+                                value={passwords.current}
+                                onChange={e => setPasswords({ ...passwords, current: e.target.value })}
+                                required
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Set New Password</Form.Label>
+                            <Form.Control
+                                type="password"
+                                value={passwords.newPass}
+                                onChange={e => setPasswords({ ...passwords, newPass: e.target.value })}
+                                required
+                            />
+                        </Form.Group>
+
+                        <Form.Group>
+                            <Form.Label>Confirm New Password</Form.Label>
+                            <Form.Control
+                                type="password"
+                                value={passwords.confirm}
+                                onChange={e => setPasswords({ ...passwords, confirm: e.target.value })}
+                                required
+                            />
+                        </Form.Group>
+
+                        <p className={`mt-2 ${passMessage.css}`}>{passMessage.message}</p>
+                    </Modal.Body>
+
+                    <Modal.Footer>
+                        <Button
+                            variant="secondary"
+                            onClick={() => {
+                                setShowPasswordModal(false);
+                                setPasswords({ current: "", newPass: "", confirm: "" });
+                            }}
+                        >
+                            Cancel
+                        </Button>
+
+                        <Button variant="warning" onClick={handleChangePassword}>Update Password</Button>
+                    </Modal.Footer>
                 </Modal>
+
             </Container>
         </Container>
     );

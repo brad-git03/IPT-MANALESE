@@ -60,6 +60,23 @@ export default function Register() {
     function register(e){
         e.preventDefault();
 
+        if(pass !== confirmPass){
+            Swal.fire({
+                title: "OOPS!",
+                text: "Password do not match",
+                icon: "warning"
+            })
+            return;
+        }
+        if(pass.length < 8){
+            Swal.fire({
+                title: "OOPS!",
+                text: "Password must be 8 characters long.",
+                icon: "warning"
+            })
+            return;
+        }
+
         fetch("http://localhost:4000/users/register", {
             method: "POST",
             headers: {"Content-Type" : "application/json"},
@@ -97,6 +114,7 @@ export default function Register() {
         })
     }
 
+    
   return (
     <Container className="vh-100 d-flex align-items-center justify-content-center">
 
@@ -149,7 +167,7 @@ export default function Register() {
 
             <Button className="w-100 p-2" type="submit">Sign Up</Button>
 
-
+            <p className="mt-3">Already have an account? <a href="/login">Log in?</a></p>
         </Form>
         </Container>
         

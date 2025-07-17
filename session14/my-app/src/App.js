@@ -9,7 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Tasks from './pages/Tasks';
 import { Container } from 'react-bootstrap';
 import Profile from './pages/Profile';
-
+import Home from './pages/Home';
 
 
 
@@ -20,6 +20,7 @@ function App() {
         <AppNavbar />
         <Container className='d-flex flex-column align-items-center justify-content-center' fluid>
           <Routes>
+            <Route path='/' element={<Home />} />
             <Route path='/register' element={<Register />} />
             <Route path='/login' element={<Login />} />
             <Route path='/tasks' element={<Tasks />} />
