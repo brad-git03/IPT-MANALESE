@@ -32,7 +32,7 @@ export default function ProfilePage() {
     });
 
     useEffect(() => {
-        document.title = `${user.fname.toUpperCase()} ${user.lname.toUpperCase()} - Profile`
+        
         if (!user) {
             navigate("/login");
         } else {
@@ -42,7 +42,9 @@ export default function ProfilePage() {
                 lname: user.lname,
                 email: user.email
             });
+            document.title = `${user.fname.toUpperCase()} ${user.lname.toUpperCase()} - Profile` 
         }
+           
     }, [user, navigate]);
 
 
